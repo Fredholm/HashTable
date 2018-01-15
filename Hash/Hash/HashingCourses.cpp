@@ -1,5 +1,6 @@
 #include "HashTableLinearProbing.h"
 #include "Course.h"
+#include <vector>
 
 void CheckIfContaining(HashTableLinearProbing<const Course>& table, const Course& word);
 
@@ -42,14 +43,59 @@ int main()
 	return 0;
 }
 
-void GetContentFromFile()
+std::vector<std::string> GetContentFromFile()
 {
 	FILE *ft;
 	int ch;
 	ft = fopen("C:\temp\courses.txt", "r");
+	std::vector<std::string> lines;
 
-		
+	bool quit = false;
+	while (quit)
+	{
+		std::string current = "";
+		char c = 0;
+		do
+		{
+			c = getc(ft);
+			current.push_back(c);
+		} while (c != '\n' && c != EOF);
 
+		lines.push_back(current);
+		current.clear();
+	}
+
+	fclose(ft);
+
+	return lines;
+}
+
+const Course* GetCoursesFromFile()
+{
+	Course courses[100];
+	int numberOfCourses = 0;
+	
+	std::vector<std::string> lines = GetContentFromFile();
+	for (size_t i = 0; i < lines.size(); i++)
+	{
+		if (lines[i].empty())
+			break;
+
+		std::string code = lines[i];
+		i++;
+
+		std::string name = lines[i];
+		i++;
+
+		float points(atof(lines[i].c_str()));
+		i++;
+
+		courses[numberOfCourses] = const Course(code, name, points);
+		numberOfCourses++;
+	}
+
+	// This is were you left off
+	return &courses;
 }
 
 void CheckIfContaining(HashTableLinearProbing<const Course>& table, const Course& word)
