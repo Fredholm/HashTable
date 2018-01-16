@@ -4,37 +4,65 @@
 #include "Hash.h"
 
 template <typename HashElement>
+struct HashNode
+{
+	HashNode(HashElement* elem)
+	{
+		data = elem;
+		next = nullptr;
+	}
+
+	HashElement* data;
+	HashNode<HashElement>* next;
+};
+
+template <typename HashElement>
 class HashTableChaining
 {
 public:
-
 	HashTableChaining(int hashTableSize = 17)
 	{
-		nrOfElements = 0;
-		nrOfCollisions = 0;
-
+		this->nrOfElements = 0;
+		this->nrOfCollisions = 0;
 		this->hashTableSize = hashTableSize;
-		table = new HashElement*[hashTableSize];
+
+		nodes = new HashNode<HashElement>*[hashTableSize];
 		for (int i = 0; i < hashTableSize; i++)
-			table[i] = nullptr;
+			nodes[i] = nullptr;
 	}
 
 	HashTableChaining(const HashTableChaining& aTable)
 	{
-		nrOfElements = 0;
-		nrOfCollisions = 0;
+		this->nrOfElements = aTable.getNumberOfElements();
+		this->nrOfCollisions = aTable.getNumberOfCollisions();
+		this->hashTableSize = aTable.getHashTableSize();
 
-		this->hashTableSize = aTable.getNrOfElements();
-		table = new HashElement*[hashTableSize];
-
+		nodes = new HashNode<HashElement>*[hashTableSize];
+		HashNode<HashElement>** otherNodes = aTable.getNodes();
 		for (int i = 0; i < hashTableSize; i++)
-			table[i] = aTable.get(i);
+		{
+			if (otherNodes[i])
+			{
+				nodes[i] = otherNodes[i];
+
+				HashNode<HashElement>* traveler = otherNodes[i];
+				while (traveler->next)
+				{
+					nodes[i]->next = traveler->next;
+					nodes[i] = nodes[i]->next;
+					nodes[i]->data = traveler->next->data;
+					traveler = traveler->next;
+				}
+			}
+		}
 	}
 
 	virtual ~HashTableChaining()
 	{
 		makeEmpty();
-		delete table;
+
+		delete nodes;
+		nodes = nullptr;
 	}
 
 	HashTableChaining& operator=(const HashTableChaining& aTable)
@@ -47,6 +75,25 @@ public:
 		}
 
 		// Copy the new one
+		nodes = new HashNode<HashElement>*[hashTableSize];
+		HashNode<HashElement>** otherNodes = aTable.getNodes();
+		for (int i = 0; i < hashTableSize; i++)
+		{
+			if (otherNodes[i])
+			{
+				nodes[i] = otherNodes[i];
+
+				HashNode<HashElement>* traveler = otherNodes[i];
+				while (traveler->next)
+				{
+					nodes[i]->next = traveler->next;
+					nodes[i] = nodes[i]->next;
+					nodes[i]->data = traveler->next->data;
+					traveler = traveler->next;
+				}
+			}
+		}
+
 		return this;
 	}
 
@@ -54,50 +101,55 @@ public:
 	{
 		int hashIndex = myHash(elem);
 
-		if (table[hashIndex] == nullptr)
-			return -1;
+		HashNode<HashElement>* traveler = nodes[hashIndex];
 
-		if (table[hashIndex] != &elem)
-			return -1;
+		// No Resulting hashnode
+		if (!traveler)
+			return false;
 
-		return hashIndex;
+		// Searching
+		do
+		{
+			if (traveler->data == &elem)
+			{
+				return hashIndex;
+			}
+			traveler = traveler->next;
+		} while (traveler->next != nullptr);
+
+		return -1;
 	}
 
 	bool insert(const HashElement& elem)
 	{
 		int hashIndex = myHash(elem);
-		printf("Inserting on Index: %d \t: ", hashIndex);
 
-		if (table[hashIndex] == nullptr)
+		// No Collision
+		if (!nodes[hashIndex])
 		{
-			// No collision
-			table[hashIndex] = &elem;
+			nrOfElements++;
+			printf("Inserting on Index: %d \t\t\t: ", hashIndex);
+			nodes[hashIndex] = new HashNode<HashElement>(&elem);
 			return true;
 		}
+		// Collision
 		else
 		{
-			// Collision
-			int start = hashIndex;
-			int counter = hashIndex + 1;
-			while (start != counter)
+			nrOfElements++;
+			nrOfCollisions++;
+			printf("Collided - Inserting on Index: %d \t: ", hashIndex);
+			HashNode<HashElement>* traveler = nodes[hashIndex];
+			while (traveler->next != nullptr)
 			{
-				if (counter >= hashTableSize)
-					counter = 0;
-
-				if (table[counter] == nullptr)
-				{
-					table[counter] = &elem;
-					nrOfCollisions++;
-
-					printf("Collided\nTrying..\nInserting on Index: %d \t: ", counter);
-					return true;
-				}
-
-				counter++;
+				traveler = traveler->next;
 			}
+
+			// Collision solved
+			traveler->next = new HashNode<HashElement>(&elem);
+			return true;
 		}
 
-		// The Hashtable is completly filled
+		// No spots left; Should not be possible with chaining, something went wrong
 		return false;
 	}
 
@@ -105,26 +157,48 @@ public:
 	{
 		int hashIndex = myHash(elem);
 
-		if (table[hashIndex] != nullptr)
-		{
-			// Remove element
-			table[hashIndex] = nullptr;
-			return true;
-		}
+		HashNode<HashElement>* traveler = nodes[hashIndex];
+		
+		// No Resulting hashnode
+		if (!traveler) 
+			return false;
 
-		// Element wasn't found, nothing got removed
+		// Searching
+		do 
+		{
+			if (traveler->data == &elem)
+			{
+				// Remove and replace with the next in line
+				HashNode<HashElement>* next = traveler->next;
+				delete traveler;
+				nodes[hashIndex] = next;
+				return true;
+			}
+			traveler = traveler->next;
+		} while (traveler->next != nullptr);
+
+		// Should not be possible with chaining, something went wrong
 		return false;
 	}
 
 	HashElement& get(int index) const
 	{
-		return table[index];
+		return nullptr;
 	}
 
 	void makeEmpty()
 	{
-		for (int i = 0; i < hashTableSize; i++)
-			table[i] = nullptr;
+		for (size_t i = 0; i < hashTableSize; i++)
+		{
+			HashNode<HashElement>* traveler = nodes[i];
+			while (traveler)
+			{
+				HashNode<HashElement>* temp = traveler->next;
+				delete traveler;
+				traveler = nullptr;
+				traveler = temp;
+			}
+		}
 
 		nrOfElements = 0;
 		nrOfCollisions = 0;
@@ -145,16 +219,29 @@ public:
 		return nrOfCollisions;
 	}
 
+	int getHashTableSize() const
+	{
+		return hashTableSize;
+	}
+
 	void resetNrOfCollisions()
 	{
 		nrOfCollisions = 0;
 	}
 
+	HashNode<HashElement>** getNodes()
+	{
+		return nodes;
+	}
+
 private:
-	HashElement * * table;
+
+	HashNode<HashElement>** nodes;
+
 	int nrOfElements;
 	int nrOfCollisions;
 	int hashTableSize;
+
 	int myHash(const HashElement& elem) const
 	{
 		static Hash<HashElement> hashFunc;

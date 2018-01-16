@@ -7,7 +7,7 @@
 const Course** GetCoursesFromFile();
 void CheckIfContaining(HashTableLinearProbing<const Course>& table, const Course& word);
 
-int main()
+int run()
 {
 	HashTableLinearProbing<const Course> hashTable(17);
 

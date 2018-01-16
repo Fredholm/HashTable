@@ -9,10 +9,10 @@ class HashTableLinearProbing
 public:
 	HashTableLinearProbing(int hashTableSize = 17)
 	{
-		nrOfElements = 0;
-		nrOfCollisions = 0;
-
+		this->nrOfElements = 0;
+		this->nrOfCollisions = 0;
 		this->hashTableSize = hashTableSize;
+
 		table = new HashElement*[hashTableSize];
 		for (int i = 0; i < hashTableSize; i++)
 			table[i] = nullptr;
@@ -20,10 +20,10 @@ public:
 
 	HashTableLinearProbing(const HashTableLinearProbing& aTable)
 	{
-		nrOfElements = 0;
-		nrOfCollisions = 0;
+		this->nrOfElements = aTable.getNrOfElements();
+		this->nrOfCollisions = aTable.getNrOfCollisions();
+		this->hashTableSize = aTable.getHashTableSize();
 
-		this->hashTableSize = aTable.getNrOfElements();
 		table = new HashElement*[hashTableSize];
 
 		for (int i = 0; i < hashTableSize; i++)
@@ -45,6 +45,14 @@ public:
 			delete table;
 		}
 
+		// Create new
+		this->nrOfElements = aTable.getNrOfElements();
+		this->nrOfCollisions = aTable.getNrOfCollisions();
+		this->hashTableSize = aTable.getHashTableSize();
+		table = new HashElement*[hashTableSize];
+		for (int i = 0; i < hashTableSize; i++)
+			table[i] = aTable.get(i);
+
 		// Copy the new one
 		return this;
 	}
@@ -54,7 +62,6 @@ public:
 		int hashIndex = myHash(elem);
 
 		// Checking from start hashIndex to find the element
-		int start = hashIndex;
 		int counter = hashIndex;
 		int loop = 0;
 		while (loop <= hashTableSize)
@@ -88,7 +95,6 @@ public:
 		else
 		{
 			// Collision
-			int start = hashIndex;
 			int counter = hashIndex;
 			int loop = 0;
 			while (loop <= hashTableSize)
@@ -120,7 +126,6 @@ public:
 	{
 		int hashIndex = myHash(elem);
 
-		int start = hashIndex;
 		int counter = hashIndex;
 		int loop = 0;
 		while (loop <= hashTableSize)
@@ -171,6 +176,11 @@ public:
 	int getNrOfCollisions() const
 	{
 		return nrOfCollisions;
+	}
+
+	int getHashTableSize() const
+	{
+		return hashTableSize;
 	}
 
 	void resetNrOfCollisions()
