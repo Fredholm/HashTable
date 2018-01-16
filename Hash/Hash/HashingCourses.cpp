@@ -2,64 +2,70 @@
 #include "Course.h"
 #include <vector>
 
+#define MAX_COURSES 250 
+
+const Course** GetCoursesFromFile();
 void CheckIfContaining(HashTableLinearProbing<const Course>& table, const Course& word);
 
 int main()
 {
 	HashTableLinearProbing<const Course> hashTable(17);
 
-	const Course words[10] =
-	{
-		Course("DV1923", "Cool Course Name", 7.5f),
-		Course("DV5901", "Cool Course Name", 7.5f),
-		Course("DV5023", "Cool Course Name", 7.5f),
-		Course("DV6912", "Cool Course Name", 7.5f),
-		Course("DV5923", "Cool Course Name", 7.5f),
-		Course("DV6924", "Cool Course Name", 7.5f),
-		Course("DV1111", "Cool Course Name", 7.5f),
-		Course("DV2222", "Cool Course Name", 7.5f),
-		Course("DV5346", "Cool Course Name", 7.5f),
-		Course("DV6200", "Cool Course Name", 7.5f),
-	};
+	const Course** courses = GetCoursesFromFile();
 
 	// Insertion of courses
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < MAX_COURSES; i++)
 	{
-		if (hashTable.insert(words[i]))
-			printf("Insertion of %s succesful.\n", words[i].getCode().c_str());
+		if (!courses[i]) break;
+		const Course& course = *courses[i];
+
+		if (hashTable.insert(course))
+			printf("Insertion of %s succesful.\n", course.getCode().c_str());
 		else
-			printf("NONsuccessful insertion of %s.\n", words[i].getCode().c_str());
+			printf("NONsuccessful insertion of %s.\n", course.getCode().c_str());
 	}
 
 	printf("Number of collisions: %d.\n", hashTable.getNrOfCollisions());
 
 	// Contains/Searching testing
-	CheckIfContaining(hashTable, words[0]);
+	CheckIfContaining(hashTable, *courses[0]);
 	const Course fakeWord("DVSHIT", "Bad Course Name", 10.f);
 	CheckIfContaining(hashTable, fakeWord);
 
 	printf("\n\nReminder: Don't forget to remove the fucking temp file at C:... (Why?)\n\n");
 
+	// Deallocate the courses
+	for (size_t i = 0; i < MAX_COURSES; i++)
+		if (courses[i])
+			delete courses[i];
+
+	// Deallocate the ptr to the course pointers
+	delete courses;
+
 	return 0;
 }
+
 
 std::vector<std::string> GetContentFromFile()
 {
 	FILE *ft;
 	int ch;
-	ft = fopen("C:\temp\courses.txt", "r");
 	std::vector<std::string> lines;
 
+	errno_t error = fopen_s(&ft, "C:\temp\courses.txt", "r");
+	printf("Error: %s\n", strerror(error));
+
 	bool quit = false;
-	while (quit)
+	while (!quit)
 	{
 		std::string current = "";
-		char c = 0;
+		int c;
 		do
 		{
-			c = getc(ft);
+			c = fgetc(ft);
 			current.push_back(c);
 		} while (c != '\n' && c != EOF);
+		if (c == EOF) quit = true;
 
 		lines.push_back(current);
 		current.clear();
@@ -70,32 +76,37 @@ std::vector<std::string> GetContentFromFile()
 	return lines;
 }
 
-const Course* GetCoursesFromFile()
+const Course** GetCoursesFromFile()
 {
-	Course courses[100];
+	const Course** courses;
+	courses = new const Course*[MAX_COURSES];
+	for (size_t i = 0; i < MAX_COURSES; i++)
+		courses = nullptr;
+
 	int numberOfCourses = 0;
 	
+	float points;
+	std::string code, name;
 	std::vector<std::string> lines = GetContentFromFile();
 	for (size_t i = 0; i < lines.size(); i++)
 	{
 		if (lines[i].empty())
 			break;
 
-		std::string code = lines[i];
+		code = lines[i];
 		i++;
 
-		std::string name = lines[i];
+		name = lines[i];
 		i++;
 
-		float points(atof(lines[i].c_str()));
+		points = atof(lines[i].c_str());
 		i++;
 
-		courses[numberOfCourses] = const Course(code, name, points);
+		courses[numberOfCourses] = new Course(code, name, points);
 		numberOfCourses++;
 	}
 
-	// This is were you left off
-	return &courses;
+	return courses;
 }
 
 void CheckIfContaining(HashTableLinearProbing<const Course>& table, const Course& word)
