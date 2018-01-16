@@ -52,18 +52,19 @@ std::vector<std::string> GetContentFromFile()
 	int ch;
 	std::vector<std::string> lines;
 
-	errno_t error = fopen_s(&ft, "C:\temp\courses.txt", "r");
+	errno_t error = fopen_s(&ft, "C:/temp/courses.txt", "r");
 	printf("Error: %s\n", strerror(error));
 
 	bool quit = false;
 	while (!quit)
 	{
 		std::string current = "";
-		int c;
+		int c = '\0';
 		do
 		{
+			if (c != '\0')
+				current.push_back(c);
 			c = fgetc(ft);
-			current.push_back(c);
 		} while (c != '\n' && c != EOF);
 		if (c == EOF) quit = true;
 
@@ -81,28 +82,21 @@ const Course** GetCoursesFromFile()
 	const Course** courses;
 	courses = new const Course*[MAX_COURSES];
 	for (size_t i = 0; i < MAX_COURSES; i++)
-		courses = nullptr;
+		courses[i] = nullptr;
 
-	int numberOfCourses = 0;
-	
+	int numberOfCourses = 0;	
 	float points;
 	std::string code, name;
 	std::vector<std::string> lines = GetContentFromFile();
-	for (size_t i = 0; i < lines.size(); i++)
+	for (size_t i = 0; i < lines.size();)
 	{
-		if (lines[i].empty())
-			break;
+		if (lines[i].empty()) break;
 
-		code = lines[i];
-		i++;
+		code	= lines[i];					i++;
+		name	= lines[i];					i++;
+		points	= atof(lines[i].c_str());	i++;
 
-		name = lines[i];
-		i++;
-
-		points = atof(lines[i].c_str());
-		i++;
-
-		courses[numberOfCourses] = new Course(code, name, points);
+		courses[numberOfCourses] = new const Course(code, name, points);
 		numberOfCourses++;
 	}
 
