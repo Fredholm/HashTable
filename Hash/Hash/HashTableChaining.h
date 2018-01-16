@@ -206,7 +206,7 @@ public:
 
 	double loadFactor() const
 	{
-		return nrOfElements / hashTableSize;
+		return float(nrOfElements) / hashTableSize;
 	}
 
 	int getNrOfElements() const

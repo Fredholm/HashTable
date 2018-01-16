@@ -6,8 +6,20 @@
 
 const Course** GetCoursesFromFile();
 void CheckIfContaining(HashTableLinearProbing<const Course>& table, const Course& word);
+void RemoveCourse(HashTableLinearProbing<const Course>& table, const Course& word);
+int CreateAndPrintHashTableLinearProbing();
 
-int run()
+////////////////////////////////////////
+// TOGGLE ON AND OFF FOR RUNNING	  //
+// CAN ONLY RUN ONE HASHTABLE AT ONCE //
+////////////////////////////////////////
+#define RUN false
+#if RUN
+int main() { return CreateAndPrintHashTableLinearProbing(); }
+#endif
+///////////////////////////////////
+
+int CreateAndPrintHashTableLinearProbing()
 {
 	HashTableLinearProbing<const Course> hashTable(17);
 
@@ -25,14 +37,14 @@ int run()
 			printf("NONsuccessful insertion of %s.\n", course.getCode().c_str());
 	}
 
-	printf("Number of collisions: %d.\n", hashTable.getNrOfCollisions());
+	// Information
+	printf("\nNumber of collisions: %d.\n", hashTable.getNrOfCollisions());
+	printf("Load Factor: %f.\n", hashTable.loadFactor());
 
 	// Contains/Searching testing
-	CheckIfContaining(hashTable, *courses[0]);
-	const Course fakeWord("FAKED_COURSE", "Bad Course Name", 10.f);
-	CheckIfContaining(hashTable, fakeWord);
-
-	printf("\n\nReminder: Don't forget to remove the fucking temp file at C:... (Why?)\n\n");
+	CheckIfContaining	(hashTable, *courses[0]);
+	RemoveCourse		(hashTable, *courses[0]);
+	CheckIfContaining	(hashTable, *courses[0]);
 
 	// Deallocate the courses
 	for (size_t i = 0; i < MAX_COURSES; i++)
@@ -111,4 +123,13 @@ void CheckIfContaining(HashTableLinearProbing<const Course>& table, const Course
 
 	if (index == -1)	printf("Does NOT contain %s.\n", word.getCode().c_str());
 	else				printf("Contains %s at index %d\n", word.getCode().c_str(), index);
+}
+
+void RemoveCourse(HashTableLinearProbing<const Course>& table, const Course& word)
+{
+	std::string savedString = word.getCode();
+
+	printf("\nRemoving..\n");
+	if (table.remove(word))		printf("Removed course: %s.\n", savedString.c_str());
+	else						printf("Could not find %s\n", savedString.c_str());
 }

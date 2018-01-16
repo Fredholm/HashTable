@@ -9,13 +9,23 @@ std::vector<std::string> GetEngWordsFromFile();
 const EngWord** GetListOfEngWords();
 void CheckIfContaining(HashTableChaining<const EngWord>& table, const EngWord& word);
 void Remove(HashTableChaining<const EngWord>& table, const EngWord& word);
+int CreateAndPrintHashTableChaining();
 
-int main()
+////////////////////////////////////////
+// TOGGLE ON AND OFF FOR RUNNING	  //
+// CAN ONLY RUN ONE HASHTABLE AT ONCE //
+////////////////////////////////////////
+#define RUN true
+#if RUN
+int main() { return CreateAndPrintHashTableChaining(); }
+#endif
+///////////////////////////////////
+
+int CreateAndPrintHashTableChaining()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	HashTableChaining<const EngWord> hashTable(17);
-
 	const EngWord** engwords = GetListOfEngWords();
 
 	// Insertion of EngWords
@@ -30,16 +40,14 @@ int main()
 			printf("COULD NOT PLACE %s.\n", word.getWord().c_str());
 	}
 
-	printf("Number of collisions: %d.\n", hashTable.getNrOfCollisions());
+	// Information
+	printf("\nNumber of collisions: %d.\n", hashTable.getNrOfCollisions());
+	printf("Load Factor: %f.\n", hashTable.loadFactor());
 
-	// Contains/Searching testing
-	CheckIfContaining(hashTable, *engwords[4]);
-	const EngWord fakeWord("FAKED_WORD");
-	CheckIfContaining(hashTable, fakeWord);
-
-	Remove(hashTable, *engwords[0]);
-
-	printf("\n\nReminder: Don't forget to remove the fucking temp file at C:... (Why?)\n\n");
+	// Testing
+	CheckIfContaining	(hashTable, *engwords[4]);
+	Remove				(hashTable, *engwords[4]);
+	CheckIfContaining	(hashTable, *engwords[4]);
 
 	// Deallocate the courses
 	for (size_t i = 0; i < MAX_WORDS; i++)
@@ -122,6 +130,7 @@ void Remove(HashTableChaining<const EngWord>& table, const EngWord & word)
 {
 	std::string savedString = word.getWord();
 
-	if (table.remove(word))		printf("\nRemoved %s.\n", savedString.c_str());
-	else						printf("\nCould not find %s\n", savedString.c_str());
+	printf("\nRemoving..\n");
+	if (table.remove(word))		printf("Removed word: %s.\n", savedString.c_str());
+	else						printf("Could not find %s\n", savedString.c_str());
 }

@@ -85,6 +85,7 @@ public:
 	{
 		int hashIndex = myHash(elem);
 		printf("Inserting on Index: %d \t: ", hashIndex);
+		nrOfElements++;
 
 		if (table[hashIndex] == nullptr)
 		{
@@ -119,6 +120,7 @@ public:
 		}
 
 		// The Hashtable is completly filled
+		nrOfElements--;
 		return false;
 	}
 
@@ -165,7 +167,7 @@ public:
 
 	double loadFactor() const
 	{
-		return nrOfElements / hashTableSize;
+		return float(nrOfElements) / hashTableSize;
 	}
 
 	int getNrOfElements() const
