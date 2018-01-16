@@ -29,7 +29,7 @@ int main()
 
 	// Contains/Searching testing
 	CheckIfContaining(hashTable, *courses[0]);
-	const Course fakeWord("DVSHIT", "Bad Course Name", 10.f);
+	const Course fakeWord("FAKED_COURSE", "Bad Course Name", 10.f);
 	CheckIfContaining(hashTable, fakeWord);
 
 	printf("\n\nReminder: Don't forget to remove the fucking temp file at C:... (Why?)\n\n");

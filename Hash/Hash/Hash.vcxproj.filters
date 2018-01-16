@@ -30,6 +30,9 @@
     <ClInclude Include="HashTableLinearProbing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HashTableChaining.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HashingCourses.cpp">

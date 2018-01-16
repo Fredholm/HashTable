@@ -1,13 +1,14 @@
-#ifndef HASHTABLELINEARPROBING_H
-#define HASHTABLELINEARPROBING_H
+#ifndef HASHTABLECHAINING_H
+#define HASHTABLECHAINING_H
 
 #include "Hash.h"
 
 template <typename HashElement>
-class HashTableLinearProbing
+class HashTableChaining
 {
 public:
-	HashTableLinearProbing(int hashTableSize = 17)
+
+	HashTableChaining(int hashTableSize = 17)
 	{
 		nrOfElements = 0;
 		nrOfCollisions = 0;
@@ -18,7 +19,7 @@ public:
 			table[i] = nullptr;
 	}
 
-	HashTableLinearProbing(const HashTableLinearProbing& aTable)
+	HashTableChaining(const HashTableChaining& aTable)
 	{
 		nrOfElements = 0;
 		nrOfCollisions = 0;
@@ -30,13 +31,13 @@ public:
 			table[i] = aTable.get(i);
 	}
 
-	virtual ~HashTableLinearProbing()
+	virtual ~HashTableChaining()
 	{
 		makeEmpty();
 		delete table;
 	}
 
-	HashTableLinearProbing& operator=(const HashTableLinearProbing& aTable)
+	HashTableChaining& operator=(const HashTableChaining& aTable)
 	{
 		// Delete current
 		if (table != nullptr)
@@ -53,25 +54,13 @@ public:
 	{
 		int hashIndex = myHash(elem);
 
-		// Checking from start hashIndex to find the element
-		int start = hashIndex;
-		int counter = hashIndex;
-		int loop = 0;
-		while (loop <= hashTableSize)
-		{
-			// Loop at end of table
-			if (counter >= hashTableSize)
-				counter = 0;
+		if (table[hashIndex] == nullptr)
+			return -1;
 
-			// Found it!
-			if (table[counter] == &elem)
-				return counter;
+		if (table[hashIndex] != &elem)
+			return -1;
 
-			counter++;
-			loop++;
-		}
-		
-		return -1;
+		return hashIndex;
 	}
 
 	bool insert(const HashElement& elem)
@@ -89,15 +78,12 @@ public:
 		{
 			// Collision
 			int start = hashIndex;
-			int counter = hashIndex;
-			int loop = 0;
-			while (loop <= hashTableSize)
+			int counter = hashIndex + 1;
+			while (start != counter)
 			{
-				// Loop at end of table
 				if (counter >= hashTableSize)
 					counter = 0;
 
-				// Found a empty spot
 				if (table[counter] == nullptr)
 				{
 					table[counter] = &elem;
@@ -108,7 +94,6 @@ public:
 				}
 
 				counter++;
-				loop++;
 			}
 		}
 
@@ -120,24 +105,11 @@ public:
 	{
 		int hashIndex = myHash(elem);
 
-		int start = hashIndex;
-		int counter = hashIndex;
-		int loop = 0;
-		while (loop <= hashTableSize)
+		if (table[hashIndex] != nullptr)
 		{
-			// Loop at end of table
-			if (counter >= hashTableSize)
-				counter = 0;
-
-			// Remove the correct element
-			if (table[counter] == &elem)
-			{	
-				table[counter] = nullptr;
-				return true;
-			}
-
-			counter++;
-			loop++;
+			// Remove element
+			table[hashIndex] = nullptr;
+			return true;
 		}
 
 		// Element wasn't found, nothing got removed
@@ -179,7 +151,7 @@ public:
 	}
 
 private:
-	HashElement** table;
+	HashElement * * table;
 	int nrOfElements;
 	int nrOfCollisions;
 	int hashTableSize;
@@ -191,4 +163,4 @@ private:
 };
 
 
-#endif // !HASHTABLELINEARPROBING_H
+#endif // !HASHTABLECHAINING_H

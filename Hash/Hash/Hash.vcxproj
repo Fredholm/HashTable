@@ -23,6 +23,7 @@
     <ClInclude Include="EngWord.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="HashTable.h" />
+    <ClInclude Include="HashTableChaining.h" />
     <ClInclude Include="HashTableLinearProbing.h" />
   </ItemGroup>
   <ItemGroup>
