@@ -71,7 +71,7 @@ public:
 				counter = 0;
 
 			// Found it!
-			if (table[counter] == &elem)
+			if (*table[counter] == elem)
 				return counter;
 
 			counter++;

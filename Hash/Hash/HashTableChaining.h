@@ -110,7 +110,7 @@ public:
 		// Searching
 		do
 		{
-			if (traveler->data == &elem)
+			if (*traveler->data == elem)
 			{
 				return hashIndex;
 			}

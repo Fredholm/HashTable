@@ -17,8 +17,8 @@ public:
 	void setWord(std::string inWord) { word = inWord; }
 
 	// Equal Operations
-	bool operator==(const EngWord& aTable) { return (strcmp(word.c_str(), aTable.word.c_str()) == 0); }
-	bool operator!=(const EngWord& aTable) { return (strcmp(word.c_str(), aTable.word.c_str()) != 0); }
+	bool operator==(const EngWord& aTable) const { return (strcmp(word.c_str(), aTable.word.c_str()) == 0); }
+	bool operator!=(const EngWord& aTable) const { return (strcmp(word.c_str(), aTable.word.c_str()) != 0); }
 
 private:
 	std::string word;

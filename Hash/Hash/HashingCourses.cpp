@@ -38,8 +38,6 @@ int CreateAndPrintHashTableLinearProbing()
 	return 0;
 }
 
-
-
 std::vector<std::string> GetContentFromFile()
 {
 	FILE *ft;
