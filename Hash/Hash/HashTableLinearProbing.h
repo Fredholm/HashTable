@@ -71,8 +71,9 @@ public:
 				counter = 0;
 
 			// Found it!
-			if (*table[counter] == elem)
-				return counter;
+			if (table[counter])
+				if (*table[counter] == elem)
+					return counter;
 
 			counter++;
 			loop++;
@@ -84,7 +85,7 @@ public:
 	bool insert(const HashElement& elem)
 	{
 		int hashIndex = myHash(elem);
-		printf("Inserting on Index: %d \t: ", hashIndex);
+		// printf("Inserting on Index: %d \t: ", hashIndex);
 		nrOfElements++;
 
 		if (table[hashIndex] == nullptr)
@@ -110,7 +111,7 @@ public:
 					table[counter] = &elem;
 					nrOfCollisions++;
 
-					printf("Collided\nTrying..\nInserting on Index: %d \t: ", counter);
+					// printf("Collided\nTrying..\nInserting on Index: %d \t: ", counter);
 					return true;
 				}
 
@@ -153,7 +154,7 @@ public:
 
 	HashElement& get(int index) const
 	{
-		return table[index];
+		return *table[index];
 	}
 
 	void makeEmpty()

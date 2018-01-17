@@ -2,8 +2,6 @@
 
 int CreateAndPrintHashTableChaining()
 {
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
 	HashTableChaining<const EngWord> hashTable(17);
 	const EngWord** engwords = GetListOfEngWords();
 
@@ -23,10 +21,8 @@ int CreateAndPrintHashTableChaining()
 	printf("\nNumber of collisions: %d.\n", hashTable.getNrOfCollisions());
 	printf("Load Factor: %f.\n", hashTable.loadFactor());
 
-	// Testing
-	CheckIfContaining	(hashTable, *engwords[4]);
-	Remove				(hashTable, *engwords[4]);
-	CheckIfContaining	(hashTable, *engwords[4]);
+	// Write a Sentence and print results
+	WriteSentence(hashTable);
 
 	// Deallocate the courses
 	for (size_t i = 0; i < MAX_WORDS; i++)
@@ -35,6 +31,8 @@ int CreateAndPrintHashTableChaining()
 
 	// Deallocate the ptr to the course pointers
 	delete engwords;
+
+	printf("Going back to main menu.\n\n\n");
 
 	return 0;
 }
@@ -95,21 +93,52 @@ const EngWord** GetListOfEngWords()
 	return engwords;
 }
 
-void CheckIfContaining(HashTableChaining<const EngWord>& table, const EngWord& word)
+void WriteSentence(HashTableChaining<const EngWord>& table)
 {
-	int index = table.contains(word);
+	// Going to the end of buffer to avoid overlapping text into cin
+	fseek(stdin, 0, SEEK_END);
 
-	printf("\nSearching..\n");
+	// Get input from user
+	std::string str;
+	printf("\nWrite a sentence: ");
+	std::getline(std::cin, str);
 
-	if (index == -1)	printf("Does NOT contain %s.\n", word.getWord().c_str());
-	else				printf("Contains %s at index %d\n", word.getWord().c_str(), index);
-}
+	std::vector<std::string> words;
+	std::string current = "";
 
-void Remove(HashTableChaining<const EngWord>& table, const EngWord & word)
-{
-	std::string savedString = word.getWord();
+	// Build all the words out of sentece
+	bool dot = false;
+	for (size_t i = 0; i < str.size(); i++) 
+	{
+		// Word Complete
+		if (str[i] == ' ')
+		{
+			words.push_back(current);
+			current.clear();
+		}
+		else if (str[i] == '.')
+		{
+			dot = true;
+			words.push_back(current);
+			current.clear();
+		}
+		else
+		{
+			current.push_back(str[i]);
+		}
+	}
+	if (!dot)
+		words.push_back(current);
 
-	printf("\nRemoving..\n");
-	if (table.remove(word))		printf("Removed word: %s.\n", savedString.c_str());
-	else						printf("Could not find %s\n", savedString.c_str());
+	int counter = 0;
+	for (std::string& s : words)
+	{
+		const EngWord search(s);
+		if (table.contains(search) != -1)
+			counter++;
+
+		printf("Inputted word: %s\n", s.c_str());
+	}
+
+	printf("\nResult!\n%d words were found in the table. Of the total %d in your sentence.\n\n", counter, words.size());
 }

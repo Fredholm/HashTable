@@ -13,14 +13,13 @@
 #define MAX_WORDS			1000
 std::vector<std::string>	GetEngWordsFromFile();
 const EngWord**				GetListOfEngWords();
-void						CheckIfContaining(HashTableChaining<const EngWord>& table, const EngWord& word);
-void						Remove(HashTableChaining<const EngWord>& table, const EngWord& word);
+void						WriteSentence(HashTableChaining<const EngWord>& table);
 int							CreateAndPrintHashTableChaining();
 
 // Courses Functions
 #define MAX_COURSES			250 
 const Course**				GetCoursesFromFile();
-void						CheckIfContaining(HashTableLinearProbing<const Course>& table);
+void						SearchAndPrint(HashTableLinearProbing<const Course>& table);
 void						RemoveCourse(HashTableLinearProbing<const Course>& table, const Course& word);
 int							CreateAndPrintHashTableLinearProbing();
 

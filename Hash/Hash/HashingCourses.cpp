@@ -3,7 +3,6 @@
 int CreateAndPrintHashTableLinearProbing()
 {
 	HashTableLinearProbing<const Course> hashTable(17);
-
 	const Course** courses = GetCoursesFromFile();
 
 	// Insertion of courses
@@ -12,20 +11,18 @@ int CreateAndPrintHashTableLinearProbing()
 		if (!courses[i]) break;
 		const Course& course = *courses[i];
 
-		if (hashTable.insert(course))
-			printf("Insertion of %s succesful.\n", course.getCode().c_str());
-		else
-			printf("NONsuccessful insertion of %s.\n", course.getCode().c_str());
+		if (hashTable.insert(course))	printf(".");
+		else							printf("X");
 	}
+	system("cls");
+	printf("\nAll courses succesfully loaded.");
 
 	// Information
 	printf("\nNumber of collisions: %d.\n", hashTable.getNrOfCollisions());
 	printf("Load Factor: %f.\n", hashTable.loadFactor());
 
 	// Contains/Searching testing
-	CheckIfContaining	(hashTable);
-	RemoveCourse		(hashTable, *courses[0]);
-	CheckIfContaining	(hashTable);
+	SearchAndPrint(hashTable);
 
 	// Deallocate the courses
 	for (size_t i = 0; i < MAX_COURSES; i++)
@@ -34,6 +31,8 @@ int CreateAndPrintHashTableLinearProbing()
 
 	// Deallocate the ptr to the course pointers
 	delete courses;
+
+	printf("Going back to main menu.\n\n\n");
 
 	return 0;
 }
@@ -95,19 +94,27 @@ const Course** GetCoursesFromFile()
 	return courses;
 }
 
-void CheckIfContaining(HashTableLinearProbing<const Course>& table)
+void SearchAndPrint(HashTableLinearProbing<const Course>& table)
 {
 	char input[24];
-	printf("Check if hashtable contains: ");
+	printf("\nCheck if hashtable contains course code: \nInput:");
 	std::cin >> input; 
 
-	const Course course(input, "temp", 0.5f);
+	const Course course(input, "", 0.f);
 	int index = table.contains(course);
 	
-	printf("\nSearching..\n");
+	printf("Searching..\n");
 
-	if (index == -1)	printf("Does NOT contain %s.\n", course.getCode().c_str());
-	else				printf("Contains %s at index %d\n", course.getCode().c_str(), index);
+	if (index == -1) printf("\nThe table does NOT contain the course with the code: %s.\n", input);
+	else
+	{
+		const Course result = table.get(index);
+		printf("\nResult:\n");
+		printf("Course Code: %s\n", result.getCode().c_str());
+		printf("Course Name: %s\n", result.getName().c_str());
+		printf("Course Points: %.2f\n", result.getPoints());
+
+	}
 }
 
 void RemoveCourse(HashTableLinearProbing<const Course>& table, const Course& word)
