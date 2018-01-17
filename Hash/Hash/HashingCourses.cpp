@@ -1,23 +1,4 @@
-#include "HashTableLinearProbing.h"
-#include "Course.h"
-#include <vector>
-
-#define MAX_COURSES 250 
-
-const Course** GetCoursesFromFile();
-void CheckIfContaining(HashTableLinearProbing<const Course>& table, const Course& word);
-void RemoveCourse(HashTableLinearProbing<const Course>& table, const Course& word);
-int CreateAndPrintHashTableLinearProbing();
-
-////////////////////////////////////////
-// TOGGLE ON AND OFF FOR RUNNING	  //
-// CAN ONLY RUN ONE HASHTABLE AT ONCE //
-////////////////////////////////////////
-#define RUN false
-#if RUN
-int main() { return CreateAndPrintHashTableLinearProbing(); }
-#endif
-///////////////////////////////////
+#include "HashingFunctions.h"
 
 int CreateAndPrintHashTableLinearProbing()
 {
@@ -42,9 +23,9 @@ int CreateAndPrintHashTableLinearProbing()
 	printf("Load Factor: %f.\n", hashTable.loadFactor());
 
 	// Contains/Searching testing
-	CheckIfContaining	(hashTable, *courses[0]);
+	CheckIfContaining	(hashTable);
 	RemoveCourse		(hashTable, *courses[0]);
-	CheckIfContaining	(hashTable, *courses[0]);
+	CheckIfContaining	(hashTable);
 
 	// Deallocate the courses
 	for (size_t i = 0; i < MAX_COURSES; i++)
@@ -56,6 +37,7 @@ int CreateAndPrintHashTableLinearProbing()
 
 	return 0;
 }
+
 
 
 std::vector<std::string> GetContentFromFile()
@@ -115,14 +97,19 @@ const Course** GetCoursesFromFile()
 	return courses;
 }
 
-void CheckIfContaining(HashTableLinearProbing<const Course>& table, const Course& word)
+void CheckIfContaining(HashTableLinearProbing<const Course>& table)
 {
-	int index = table.contains(word);
+	char input[24];
+	printf("Check if hashtable contains: ");
+	std::cin >> input; 
+
+	const Course course(input, "temp", 0.5f);
+	int index = table.contains(course);
 	
 	printf("\nSearching..\n");
 
-	if (index == -1)	printf("Does NOT contain %s.\n", word.getCode().c_str());
-	else				printf("Contains %s at index %d\n", word.getCode().c_str(), index);
+	if (index == -1)	printf("Does NOT contain %s.\n", course.getCode().c_str());
+	else				printf("Contains %s at index %d\n", course.getCode().c_str(), index);
 }
 
 void RemoveCourse(HashTableLinearProbing<const Course>& table, const Course& word)

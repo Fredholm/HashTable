@@ -1,25 +1,4 @@
-#include "HashTableChaining.h"
-#include "EngWord.h"
-#include <vector>  
-#include <crtdbg.h>
-
-#define MAX_WORDS 1000
-
-std::vector<std::string> GetEngWordsFromFile();
-const EngWord** GetListOfEngWords();
-void CheckIfContaining(HashTableChaining<const EngWord>& table, const EngWord& word);
-void Remove(HashTableChaining<const EngWord>& table, const EngWord& word);
-int CreateAndPrintHashTableChaining();
-
-////////////////////////////////////////
-// TOGGLE ON AND OFF FOR RUNNING	  //
-// CAN ONLY RUN ONE HASHTABLE AT ONCE //
-////////////////////////////////////////
-#define RUN true
-#if RUN
-int main() { return CreateAndPrintHashTableChaining(); }
-#endif
-///////////////////////////////////
+#include "HashingFunctions.h"
 
 int CreateAndPrintHashTableChaining()
 {

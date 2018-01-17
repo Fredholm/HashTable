@@ -33,12 +33,18 @@
     <ClInclude Include="HashTableChaining.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HashingFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HashingCourses.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HashingEngWords.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
