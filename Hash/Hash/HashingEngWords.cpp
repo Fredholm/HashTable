@@ -1,8 +1,22 @@
 #include "HashingFunctions.h"
 
+/*
+	- A high load factor is making the searching slow
+	- While a low load factor is using too much memory
+
+	The perfect load factor for a hashtable is around ~log 2 (~0.7), 
+	because of reasons I won't go into in this comment.. :p
+
+	In the hash chaining table,
+	I'm using 1425, because it's really close to the perfect load factor in this example, at least.
+
+*/
+
+#define HASH_TABLE_CHAINING_SIZE 1425
+
 int CreateAndPrintHashTableChaining()
 {
-	HashTableChaining<const EngWord> hashTable(17);
+	HashTableChaining<const EngWord> hashTable(HASH_TABLE_CHAINING_SIZE);
 	const EngWord** engwords = GetListOfEngWords();
 
 	// Insertion of EngWords

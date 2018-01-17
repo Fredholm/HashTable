@@ -1,8 +1,23 @@
 #include "HashingFunctions.h"
 
+/*
+
+	- A high load factor is making the searching slow
+	- While a low load factor is using too much memory
+
+	The perfect load factor for a hashtable is around ~log 2 (~0.7),
+	because of reasons I won't go into in this comment.. :p
+
+	In the linear probing table,
+	I'm using 20, because it's really close to the perfect load factor in this example, at least.
+
+*/
+
+#define HASH_TABLE_CHAINING_SIZE 20
+
 int CreateAndPrintHashTableLinearProbing()
 {
-	HashTableLinearProbing<const Course> hashTable(17);
+	HashTableLinearProbing<const Course> hashTable(HASH_TABLE_CHAINING_SIZE);
 	const Course** courses = GetCoursesFromFile();
 
 	// Insertion of courses

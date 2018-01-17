@@ -114,7 +114,7 @@ public:
 			{
 				return hashIndex;
 			}
-			traveler = traveler->next;
+			if (traveler->next) traveler = traveler->next;
 		} while (traveler->next != nullptr);
 
 		return -1;
