@@ -21,9 +21,9 @@ public:
 	void setPoints(float inPoints) { points = inPoints; }
 
 	// Equal Operations (because the code for each course is enough, we only need to compare that)
-	bool operator==(const Course& aTable) 
+	bool operator==(const Course& aTable)
 	{
-		return (strcmp(code.c_str(), aTable.code.c_str()) == 0); 
+		return (strcmp(code.c_str(), aTable.code.c_str()) == 0);
 	}
 	bool operator!=(const Course& aTable) { return (strcmp(code.c_str(), aTable.code.c_str()) != 0); }
 
