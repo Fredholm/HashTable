@@ -92,7 +92,6 @@ public:
 			// Which means that we can exit the loop earlier
 			if (!table[counter]->haveBeenUsed)
 			{
-
 				return -1;
 			}
 
@@ -164,6 +163,12 @@ public:
 				table[counter]->data = nullptr;
 				table[counter]->haveBeenUsed = true;
 				return true;
+			}
+
+			// Which means that we can exit the loop earlier
+			if (!table[counter]->haveBeenUsed)
+			{
+				return false;
 			}
 
 			counter++;
