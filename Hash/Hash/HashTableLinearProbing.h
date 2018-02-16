@@ -4,6 +4,19 @@
 #include "Hash.h"
 
 template <typename HashElement>
+struct Element
+{
+	Element(HashElement* elem)
+	{
+		data = elem;
+		haveBeenUsed = false;
+	}
+
+	bool haveBeenUsed;
+	HashElement* data;
+};
+
+template <typename HashElement>
 class HashTableLinearProbing
 {
 public:
@@ -13,9 +26,9 @@ public:
 		this->nrOfCollisions = 0;
 		this->hashTableSize = hashTableSize;
 
-		table = new HashElement*[hashTableSize];
+		table = new Element<HashElement>*[hashTableSize];
 		for (int i = 0; i < hashTableSize; i++)
-			table[i] = nullptr;
+			table[i] = new Element<HashElement>(nullptr);
 	}
 
 	HashTableLinearProbing(const HashTableLinearProbing& aTable)
@@ -24,10 +37,9 @@ public:
 		this->nrOfCollisions = aTable.getNrOfCollisions();
 		this->hashTableSize = aTable.getHashTableSize();
 
-		table = new HashElement*[hashTableSize];
-
+		table = new Element<HashElement>*[hashTableSize];
 		for (int i = 0; i < hashTableSize; i++)
-			table[i] = aTable.get(i);
+			table[i] = new Element<HashElement>(aTable.get(i));
 	}
 
 	virtual ~HashTableLinearProbing()
@@ -49,9 +61,9 @@ public:
 		this->nrOfElements = aTable.getNrOfElements();
 		this->nrOfCollisions = aTable.getNrOfCollisions();
 		this->hashTableSize = aTable.getHashTableSize();
-		table = new HashElement*[hashTableSize];
+		table = new Element<HashElement>*[hashTableSize];
 		for (int i = 0; i < hashTableSize; i++)
-			table[i] = aTable.get(i);
+			table[i] = new Element<HashElement>(aTable.get(i));
 
 		// Copy the new one
 		return this;
@@ -71,9 +83,18 @@ public:
 				counter = 0;
 
 			// Found it!
-			if (table[counter])
-				if (*table[counter] == elem)
+			if (table[counter]->data)
+			{
+				if (*table[counter]->data == elem)
 					return counter;
+			}
+			// Means the spot have never been used
+			// Which means that we can exit the loop earlier
+			if (!table[counter]->haveBeenUsed)
+			{
+
+				return -1;
+			}
 
 			counter++;
 			loop++;
@@ -88,10 +109,10 @@ public:
 		// printf("Inserting on Index: %d \t: ", hashIndex);
 		nrOfElements++;
 
-		if (table[hashIndex] == nullptr)
+		if (table[hashIndex]->data == nullptr)
 		{
 			// No collision
-			table[hashIndex] = &elem;
+			table[hashIndex]->data = &elem;
 			return true;
 		}
 		else
@@ -106,9 +127,9 @@ public:
 					counter = 0;
 
 				// Found a empty spot
-				if (table[counter] == nullptr)
+				if (table[counter]->data == nullptr)
 				{
-					table[counter] = &elem;
+					table[counter]->data = &elem;
 					nrOfCollisions++;
 
 					// printf("Collided\nTrying..\nInserting on Index: %d \t: ", counter);
@@ -138,9 +159,10 @@ public:
 				counter = 0;
 
 			// Remove the correct element
-			if (table[counter] == &elem)
+			if (table[counter]->data == &elem)
 			{	
-				table[counter] = nullptr;
+				table[counter]->data = nullptr;
+				table[counter]->haveBeenUsed = true;
 				return true;
 			}
 
@@ -154,7 +176,7 @@ public:
 
 	HashElement& get(int index) const
 	{
-		return *table[index];
+		return *table[index]->data;
 	}
 
 	void makeEmpty()
@@ -192,7 +214,7 @@ public:
 	}
 
 private:
-	HashElement** table;
+	Element<HashElement>** table;
 	int nrOfElements;
 	int nrOfCollisions;
 	int hashTableSize;
